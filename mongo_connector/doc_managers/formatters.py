@@ -95,7 +95,7 @@ class DefaultDocumentFormatter(DocumentFormatter):
                 raise ValueError("inf")
             return value
         elif isinstance(value, datetime.datetime):
-            return value
+            return value.strptime("%Y-%m-%dT%H:%M:%S.%fZ")
         elif value is None:
             return value
         # Default
