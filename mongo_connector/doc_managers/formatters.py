@@ -95,7 +95,8 @@ class DefaultDocumentFormatter(DocumentFormatter):
                 raise ValueError("inf")
             return value
         elif isinstance(value, datetime.datetime):
-            return value.strptime("%Y-%m-%dT%H:%M:%S.%fZ")
+            isodatetime = value.strftime("%Y-%m-%dT%H:%M:%S.%f")
+            return isodatetime[0:len(isodatetime)-3] + "Z"
         elif value is None:
             return value
         # Default
