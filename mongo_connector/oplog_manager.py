@@ -116,6 +116,9 @@ class OplogThread(threading.Thread):
 
         # Whether the collection dump gracefully handles exceptions
         self.continue_on_error = kwargs.get('continue_on_error', False)
+        
+        # Whether the collection is tracelog and should keep runing
+        self.collection_is_log = kwargs.get('collection_is_log', False)
 
         LOG.info('OplogThread: Initializing oplog thread')
 
@@ -200,8 +203,7 @@ class OplogThread(threading.Thread):
                 err_msg = "OplogThread: Last entry no longer in oplog"
                 effect = "cannot recover!"
                 LOG.error('%s %s %s' % (err_msg, effect, self.oplog))
-                if not self.continue_on_error:
-                    self.running = False
+                self.running = False
                 continue
 
             if cursor_empty:
@@ -761,12 +763,13 @@ class OplogThread(threading.Thread):
 
         first_oplog_entry = next(cursor)
 
-        oldest_ts_long = util.bson_ts_to_long(
-            self.get_oldest_oplog_timestamp())
-        checkpoint_ts_long = util.bson_ts_to_long(timestamp)
-        if checkpoint_ts_long < oldest_ts_long:
-            # We've fallen behind, the checkpoint has fallen off the oplog
-            return None, True
+        if not self.collection_is_log:
+            oldest_ts_long = util.bson_ts_to_long(
+                self.get_oldest_oplog_timestamp())
+            checkpoint_ts_long = util.bson_ts_to_long(timestamp)
+            if checkpoint_ts_long < oldest_ts_long:
+                # We've fallen behind, the checkpoint has fallen off the oplog
+                return None, True
 
         cursor_ts_long = util.bson_ts_to_long(first_oplog_entry["ts"])
         if cursor_ts_long > checkpoint_ts_long:
