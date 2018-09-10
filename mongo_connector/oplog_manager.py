@@ -200,7 +200,8 @@ class OplogThread(threading.Thread):
                 err_msg = "OplogThread: Last entry no longer in oplog"
                 effect = "cannot recover!"
                 LOG.error('%s %s %s' % (err_msg, effect, self.oplog))
-                self.running = False
+                if not self.continue_on_error:
+                    self.running = False
                 continue
 
             if cursor_empty:
