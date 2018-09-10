@@ -760,10 +760,10 @@ class OplogThread(threading.Thread):
 
         first_oplog_entry = next(cursor)
 
+        checkpoint_ts_long = util.bson_ts_to_long(timestamp)
         if not self.continue_on_error:
             oldest_ts_long = util.bson_ts_to_long(
-                self.get_oldest_oplog_timestamp())
-            checkpoint_ts_long = util.bson_ts_to_long(timestamp)
+                self.get_oldest_oplog_timestamp())           
             if checkpoint_ts_long < oldest_ts_long:
                 # We've fallen behind, the checkpoint has fallen off the oplog
                 return None, True
