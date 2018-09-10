@@ -116,9 +116,6 @@ class OplogThread(threading.Thread):
 
         # Whether the collection dump gracefully handles exceptions
         self.continue_on_error = kwargs.get('continue_on_error', False)
-        
-        # Whether the collection is tracelog and should keep runing
-        self.collection_is_log = kwargs.get('collection_is_log', False)
 
         LOG.info('OplogThread: Initializing oplog thread')
 
@@ -763,7 +760,7 @@ class OplogThread(threading.Thread):
 
         first_oplog_entry = next(cursor)
 
-        if not self.collection_is_log:
+        if not self.continue_on_error:
             oldest_ts_long = util.bson_ts_to_long(
                 self.get_oldest_oplog_timestamp())
             checkpoint_ts_long = util.bson_ts_to_long(timestamp)
